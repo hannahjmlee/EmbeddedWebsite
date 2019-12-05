@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang=''>
+    <head>
+        <script>
+        var inputCurrentIn = {{inputCurrentIn}};
+        var inputCurrentOut = {{inputCurrentOut}};
+        var batteryVoltage = {{batteryVoltage}};
+        var outputCurrentIn = {{outputCurrentIn}};
+        var outputCurrentOut = {{outputCurrentOut}};
+        var temperature = {{temperature}};
+        var xPoints = {{xPoints}};
+        var numElements = {{numElements}};
+        </script>
+        <script src="http://canvasjs.com/assets/script/canvasjs.min.js"></script>
+    <script src="./../static/js/functions.js"></script>
+    </head>
+    <body>
+        {% extends "layout.html" %}
+        {% block content %}
+        <h1>Graphs of the 10 Most Recent Measurements</h1>
+        <div id="currentChartContainer" style="height: 360px; width: 75%;"></div><br>
+        <script>makeCurrentChart("currentChartContainer",
+            "Input and Output Current Readings", {{inputCurrentIn}},
+            {{inputCurrentOut}}, {{outputCurrentIn}}, {{outputCurrentOut}}, {{xPoints}},
+            {{numElements}});</script>
+        <div id="voltageChartContainer" style="height: 360px; width: 75%;"></div><br>
+        <script>makeChart("voltageChartContainer", "Voltage Readings", "Voltage (V)",
+            {{batteryVoltage}}, {{xPoints}}, {{numElements}}); </script>
+
+        <div id="tempChartContainer" style="height: 360px; width: 75%;"></div><br>
+        <script>makeChart("tempChartContainer", "Temperature Readings", "Temperature (F)",
+            {{temperature}}, {{xPoints}},{{numElements}}); </script>
+        {% endblock %}
+    </body>
+</html>

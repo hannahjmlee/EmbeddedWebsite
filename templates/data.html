@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang=''>
+    <head>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+    <script type=text/javascript>
+        var current_elements = {{current_elements}};
+        var logged_elements = {{logged_elements}};
+        var current_data = {{current_data|tojson|safe}};
+        var log_data = {{log_data|tojson|safe}};
+
+        $(function() {
+            $('a#clearData').bind('click', function() {
+                $.getJSON('/clear_data',
+                    function(data) {
+                    });
+                window.location.reload();
+                return false;
+            });
+
+            $('input#readData').bind('click', function() {
+                $.getJSON('/read_data',
+                    function(data) {
+                    });
+                window.location.reload();
+                return false;
+            });
+
+            $('a#writeData').bind('click', function() {
+                $.getJSON('/write_data',
+                    function(data) {
+                    });
+                window.location.reload();
+                return false;
+            });
+        });
+    </script>
+    </head>
+    <body>
+        {% extends "layout.html" %}
+        {% block content %}
+        <h1>System Status</h1>
+        <h2>Read and Save Data:</h2>
+        <form method="POST">
+            <input name="charge">
+            <input type="submit" id=readData value="Charge">
+        </form> <br>
+        <form method="POST">
+            <input name="discharge">
+            <input type="submit" id=readData value="Discharge">
+        </form> <br>
+        <form>
+            <a href=# class="myButton" id=clearData >Clear Data</a>
+            <a href=# class="myButton" id=writeData >Save Data</a>
+        </form>
+        <h2>Current Data:</h2>
+            <table id="currentData">
+                <tr>
+                    <th>Time Stamp</th>
+                    <th>Input Current In (A)</th>
+                    <th>Input Current Out (A)</th>
+                    <th>Battery Voltage (V)</th>
+                    <th>Temperature (F)</th>
+                    <th>Output Current In (A)</th>
+                    <th>Output Current Out(A)</th>
+                </tr>
+                <tr>
+                    {% for column in range(current_elements) %}
+                    <td> {{current_data[column]}} </td>
+                    {% endfor %}
+                </tr>
+            </table>
+
+        <h2>Logged Data:</h2>
+            <table id="loggedData">
+                <tr>
+                    <th>Time Stamp</th>
+                    <th>Input Current In (A)</th>
+                    <th>Input Current Out (A)</th>
+                    <th>Battery Voltage (V)</th>
+                    <th>Temperature (F)</th>
+                    <th>Output Current In (A)</th>
+                    <th>Output Current Out(A)</th>
+                </tr>
+                    {% for row in range(logged_elements) %}
+                    <tr>
+                        {% for column in range(current_elements) %}
+                            <td> {{log_data[row][column]}} </td>
+                        {% endfor %}
+                    </tr>
+                    {% endfor %}
+            </table>
+        {% endblock %}
+    </body>
+</html>

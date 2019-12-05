@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang=''>
+    <head>
+        <script type=text/javascript>
+            var baud_rate = {{baud_rate}};
+            var vmax = {{vmax}};
+            var vmin = {{vmin}};
+            var chargeI = {{chargeI}};
+            var dischargeI = {{dischargeI}};
+            var minTemp = {{minTemp}};
+            var maxTemp = {{maxTemp}};
+            var configuration_list = {{configuration_list|tojson|safe}};
+            var numElements = {{numElements}};
+        </script>
+    </head>
+    <body>
+        {% extends "layout.html" %}
+        {% block content %}
+        <h1>Battery Management System - System Configuration</h1>
+        <div class = "configure_baud">
+            <h2>Current Configuration</h2>
+            <table id="currentConfiguration">
+                <tr>
+                    <th>Baud Rate (bps)</th>
+                    <th>Min Voltage (V)</th>
+                    <th>Max Voltage (V)</th>
+                    <th>Charge Current (A)</th>
+                    <th>Discharge Current (A)</th>
+                    <th>Min Temperature (F)</th>
+                    <th>Max Temperature (F)</th>
+                </tr>
+                <tr>
+                    {% for column in range(numElements) %}
+                    <td> {{configuration_list[column]}} </td>
+                    {% endfor %}
+                </tr>
+            </table>
+            <h3> Update Baud Rate: </h3>
+            <form method="POST">
+                <input name="baud">
+                <input type="submit" class="Rate" value="Update Rate (bps)">
+            </form>
+            <h3> Update Min/Max Voltage: </h3>
+            <form method="POST">
+                <input name="vmin">
+                <input type="submit" value="Update Min Voltage (V)">
+            </form> <br>
+            <form method="POST">
+                <input name="vmax">
+                <input type="submit" value="Update Max Voltage (V)">
+            </form>
+            <h3> Update Charge/Discharge Current: </h3>
+            <form method="POST">
+                <input name="chargeI">
+                <input type="submit" value="Update Charge Current (A)">
+            </form> <br>
+            <form method="POST">
+                <input name="dischargeI">
+                <input type="submit" value="Update Discharge Current (A)">
+            </form>
+            <h3> Update Min/Max Temperature: </h3>
+            <form method="POST">
+                <input name="minTemp">
+                <input type="submit" value="Update Min Temperature (F)">
+            </form> <br>
+            <form method="POST">
+                <input name="maxTemp">
+                <input type="submit" value="Update Max Temperature (F)">
+            </form>
+        </div>
+        {% endblock %}
+    </body>
+</html>

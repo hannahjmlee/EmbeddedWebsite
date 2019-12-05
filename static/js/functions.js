@@ -1,8 +1,6 @@
-function makeCurrentChart(containerString, titleString, iCI, iCO, oCI, oCO, xPoints, num){
-    var inputIn = generate(xPoints, iCI, num, "coral");
-    var inputOut = generate(xPoints, iCO, num, "orangered");
-    var outputIn = generate(xPoints, oCI, num, "darkturquoise");
-    var outputOut = generate(xPoints, oCO, num, "mediumorchid");
+function makeCurrentChart(containerString, titleString, iCI, iCO, xPoints, num){
+    var inputIn = generate(xPoints, iCI, num, "darkturquoise");
+    var inputOut = generate(xPoints, iCO, num, "mediumorchid");
     var chart = new CanvasJS.Chart(containerString,
         {
             title:{
@@ -20,31 +18,16 @@ function makeCurrentChart(containerString, titleString, iCI, iCO, oCI, oCO, xPoi
                     type: "line",
                     showInLegend: true,
                     name: "series1",
-                    legendText: "Input Current In",
+                    legendText: "Charge Current",
                     dataPoints: inputIn
                 },
                 {
                     type: "line",
                     showInLegend: true,
                     name: "series2",
-                    legendText: "Input Current Out",
+                    legendText: "Discharge Current",
                     dataPoints: inputOut
                 },
-                {
-                    type: "line",
-                    showInLegend: true,
-                    name: "series3",
-                    legendText: "Output Current In",
-                    dataPoints: outputIn
-                },
-                {
-                    type: "line",
-                    showInLegend: true,
-                    name: "series4",
-                    legendText: "Output Current Out",
-                    dataPoints: outputOut
-                },
-
             ]
         });
 

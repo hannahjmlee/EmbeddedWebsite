@@ -137,7 +137,7 @@ def graphs():
         if (len(logged_data) == 10):
             break
         if(lines[i] == "\n"):
-            if(len(tmp) == 7):
+            if(len(tmp) == 5):
                 logged_data.append(tmp)
             tmp = []
             continue
@@ -146,8 +146,6 @@ def graphs():
     input_current_in = []
     input_current_out = []
     voltage = []
-    output_current_in = []
-    output_current_out = []
     temp = []
 
     for row in logged_data:
@@ -155,15 +153,10 @@ def graphs():
         input_current_out.insert(0, float(row[2]))
         voltage.insert(0, float(row[3]))
         temp.insert(0, float(row[4]))
-        output_current_in.insert(0, float(row[5]))
-        output_current_out.insert(0, float(row[6]))
 
-    print(voltage)
     x_values= list(range(1, len(logged_data)+1))
-
     return render_template('graphs.html', inputCurrentIn=input_current_in,
             inputCurrentOut=input_current_out, batteryVoltage=voltage,
-            outputCurrentIn=output_current_in, outputCurrentOut=output_current_out,
             temperature=temp, xPoints=x_values, numElements=len(logged_data))
 
 @app.route('/contact/')
@@ -183,22 +176,49 @@ def data():
             if(num):
                 charge_val = float(charge_val)
             # do stuff with charge
+            read_data()
+            return redirect(url_for('data'))
         except:
             pass
 
         try:
             discharge_val = request.form['discharge']
             discharge_val = discharge_val.rstrip()
-            print("Charging: ", discharge_val)
+            print("Discharging: ", discharge_val)
             num = isNumber(discharge_val)
             if(num):
                 discharge_val = float(discharge_val)
             # do stuff with charge
+            return redirect(url_for('data'))
+        except:
+            pass
+
+        try:
+            sine_discharge = request.form['sine_discharge']
+            sine_discharge = sine_discharge.rstrip()
+            print("Sine Discharging: ", sine_discharge)
+            num = isNumber(sine_discharge)
+            if(num):
+                sine_discharge = float(sine_discharge)
+            # do stuff with charge
+            return redirect(url_for('data'))
+        except:
+            pass
+
+        try:
+            prbs = request.form['PRBS_discharge']
+            prbs = prbs.rstrip()
+            print("Pseudo Random Binary Sequence Discharge: ", prbs)
+            num = isNumber(prbs)
+            if(num):
+                prbs = float(prbs)
+            # do stuff with charge
+            return redirect(url_for('data'))
         except:
             pass
     current_lines = f.readlines()
-    data = ["0000-00-00 00:00", "0.0", "0.0", "0.0", "0.0", "0.0", "0.0"]
-    size = 7
+    data = ["0000-00-00 00:00", "0.0", "0.0", "0.0", "0.0"]
+    size = 5
     i = 0
     if(len(current_lines) != 0):
         for value in current_lines:
@@ -219,7 +239,7 @@ def data():
         if (len(logged_data) == 10):
             break
         if(lines[i] == "\n"):
-            if(len(tmp) == 7):
+            if(len(tmp) == 5):
                 logged_data.append(tmp)
             tmp = []
             continue

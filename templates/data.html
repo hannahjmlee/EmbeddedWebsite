@@ -9,16 +9,24 @@
         var log_data = {{log_data|tojson|safe}};
 
         $(function() {
-            $('a#clearData').bind('click', function() {
-                $.getJSON('/clear_data',
+            $('a#charge').bind('click', function() {
+                $.getJSON('/charge',
                     function(data) {
                     });
                 window.location.reload();
                 return false;
             });
 
-            $('a#writeData').bind('click', function() {
-                $.getJSON('/write_data',
+            $('a#discharge').bind('click', function() {
+                $.getJSON('/discharge',
+                    function(data) {
+                    });
+                window.location.reload();
+                return false;
+            });
+
+            $('a#poll').bind('click', function() {
+                $.getJSON('/read_data',
                     function(data) {
                     });
                 window.location.reload();
@@ -32,14 +40,15 @@
         {% block content %}
         <h1>System Status</h1>
         <h2>Read and Save Data:</h2>
-        <form method="POST">
-            <input name="charge">
-            <input type="submit" id=readData value="Charge">
-        </form> <br>
-        <form method="POST">
-            <input name="discharge">
-            <input type="submit" id=readData value="Discharge">
-        </form> <br>
+        <form>
+            <a href=# class="myButton" id=charge >Charge</a>
+        </form>
+        <form>
+            <a href=# class="myButton" id=discharge >Discharge</a>
+            <a href=# class="myButton" id=poll >Poll Data</a>
+        </form>
+        <p>If choose to use Sine or PRBS Discharge, you must wait until all data is polled.</p>
+        <br>
         <form method="POST">
             <input name="sine_discharge">
             <input type="submit" id=readData value="Sine Discharge">
@@ -48,10 +57,6 @@
             <input name="PRBS_discharge">
             <input type="submit" id=readData value="PRBS Discharge">
         </form> <br>
-        <form>
-            <a href=# class="myButton" id=clearData >Clear Data</a>
-            <a href=# class="myButton" id=writeData >Save Data</a>
-        </form>
         <h2>Current Data:</h2>
             <table id="currentData">
                 <tr>

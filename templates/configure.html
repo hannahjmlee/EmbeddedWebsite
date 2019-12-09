@@ -11,6 +11,15 @@
             var maxTemp = {{maxTemp}};
             var configuration_list = {{configuration_list|tojson|safe}};
             var numElements = {{numElements}};
+        $(function() {
+            $('a#loadCurrent').bind('click', function() {
+                $.getJSON('/load_configuration',
+                    function(data) {
+                    });
+                window.location.reload();
+                return false;
+            });
+        }
         </script>
     </head>
     <body>
@@ -35,7 +44,12 @@
                     {% endfor %}
                 </tr>
             </table>
+            <br><br>
+            <form>
+                <a href=# class="myButton" id=loadCurrent> Load Current Configuration</a>
+            </form> 
             <h3> Update Baud Rate: </h3>
+            <p> Choose from 1200, 9600, 19200, 115200 bps </p>
             <form method="POST">
                 <input name="baud">
                 <input type="submit" class="Rate" value="Update Rate (bps)">

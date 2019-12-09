@@ -169,31 +169,6 @@ def data():
     f = open("./data/current_data.txt", "r")
     if request.method == "POST":
         try:
-            charge_val = request.form['charge']
-            charge_val = charge_val.rstrip()
-            print("Charging: ", charge_val)
-            num = isNumber(charge_val)
-            if(num):
-                charge_val = float(charge_val)
-            # do stuff with charge
-            read_data()
-            return redirect(url_for('data'))
-        except:
-            pass
-
-        try:
-            discharge_val = request.form['discharge']
-            discharge_val = discharge_val.rstrip()
-            print("Discharging: ", discharge_val)
-            num = isNumber(discharge_val)
-            if(num):
-                discharge_val = float(discharge_val)
-            # do stuff with charge
-            return redirect(url_for('data'))
-        except:
-            pass
-
-        try:
             sine_discharge = request.form['sine_discharge']
             sine_discharge = sine_discharge.rstrip()
             print("Sine Discharging: ", sine_discharge)
@@ -284,8 +259,25 @@ def write_data():
     write_file.writelines(lines)
     return "nothing"
 
-@app.route('/clear_data')
-def clear_data():
+@app.route('/charge')
+def charge(): 
+    print("ENTERED CHARGE FUNCTION")
+    with open("./data/configuration.txt") as f:
+        value_list = f.readlines()
+    baud = int(value_list[0].rstrip())
+    print("BAUD RATE IS: ", baud)
+    ser = serial.Serial("/dev/ttyUSB0", baud, timeout = 1)
+    sio = io.TextIOWrapper(io.BufferedRWPair(ser, ser))
+    sio.write(str("H"))
+    sio.flush()
+    response = sio.readline(15).strip()
+    print("Sent C: ", response)
+    ser.close()
+    open('./data/current_data.txt', 'w').close()
+    return "nothing"
+
+@app.route('/discharge')
+def discharge():
     open('./data/current_data.txt', 'w').close()
     return "nothing"
 

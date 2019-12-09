@@ -9,43 +9,24 @@
         var log_data = {{log_data|tojson|safe}};
 
         $(function() {
-            $('a#charge').bind('click', function() {
-                $.getJSON('/charge',
-                    function(data) {
-                    });
-                window.location.reload();
+            $('a#chargeData').bind('click', function(){
+                $.getJSON('/write_data', 
+                        function(data){
+                        }); 
                 return false;
-            });
+            }
 
-            $('a#discharge').bind('click', function() {
-                $.getJSON('/discharge',
-                    function(data) {
-                    });
-                window.location.reload();
-                return false;
-            });
-
-            $('a#poll').bind('click', function() {
-                $.getJSON('/read_data',
-                    function(data) {
-                    });
-                window.location.reload();
-                return false;
-            });
-        });
+        }); 
     </script>
     </head>
     <body>
         {% extends "layout.html" %}
         {% block content %}
         <h1>System Status</h1>
-        <h2>Read and Save Data:</h2>
         <form>
-            <a href=# class="myButton" id=charge >Charge</a>
-        </form>
-        <form>
-            <a href=# class="myButton" id=discharge >Discharge</a>
-            <a href=# class="myButton" id=poll >Poll Data</a>
+            <a href=# class="myButton" id=chargeData>Charge</a>
+            <a href=# class="myButton" id=discharge>Discharge</a>
+            <a href=# class="myButton" id=poll> Poll Data</a>
         </form>
         <p>If choose to use Sine or PRBS Discharge, you must wait until all data is polled.</p>
         <br>

@@ -243,6 +243,7 @@ def read_data():
 
 @app.route('/write_data')
 def write_data():
+    print("SHITS")
     current_file = open("./data/current_data.txt", "r")
     log_file = open("./data/log_data.txt", "r")
 
@@ -259,32 +260,21 @@ def write_data():
     write_file.writelines(lines)
     return "nothing"
 
-@app.route('/charge')
-def charge(): 
-    print("ENTERED CHARGE FUNCTION")
-    with open("./data/configuration.txt") as f:
-        value_list = f.readlines()
-    baud = int(value_list[0].rstrip())
-    print("BAUD RATE IS: ", baud)
-    ser = serial.Serial("/dev/ttyUSB0", baud, timeout = 1)
-    sio = io.TextIOWrapper(io.BufferedRWPair(ser, ser))
-    sio.write(str("H"))
-    sio.flush()
-    response = sio.readline(15).strip()
-    print("Sent C: ", response)
-    ser.close()
-    open('./data/current_data.txt', 'w').close()
+
+@app.route('/charge_data')
+def charge_data(): 
+    print("FUCKING HELL")
     return "nothing"
-
-@app.route('/discharge')
-def discharge():
-    open('./data/current_data.txt', 'w').close()
-    return "nothing"
-
-
-
-
-if __name__ == '__main__':
-    app.run(debug=True)
-
+    #with open("./data/configuration.txt") as f:
+    #    value_list = f.readlines()
+    #baud = int(value_list[0].rstrip())
+    #print("BAUD RATE IS: ", baud)
+    #ser = serial.Serial("/dev/ttyUSB0", baud, timeout = 1)
+    #sio = io.TextIOWrapper(io.BufferedRWPair(ser, ser))
+    #sio.write(str("H"))
+    #sio.flush()
+    #response = sio.readline(15).strip()
+    #print("Sent C: ", response)
+    #ser.close()
+    #open('./data/current_data.txt', 'w').close()
 

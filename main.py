@@ -265,24 +265,44 @@ def write_data():
 
 @app.route('/charge_data')
 def charge_data():
-    print("CHARGE DATA")
-    with open("./data/configuration.txt") as f:
-        value_list = f.readlines()
-    baud = int(value_list[0].rstrip())
-    print("BAUD RATE IS:", baud)
+    print("WTF")
+    #with open("./data/configuration.txt") as f:
+    #    value_list = f.readlines()
+    #baud = int(value_list[0].rstrip())
+    #print("Charge, baud rate:", baud)
     #ser = serial.Serial("/dev/ttyUSB0", baud, timeout = 1)
     #sio = io.TextIOWrapper(io.BufferedRWPair(ser, ser))
     #sio.write(str("H"))
     #sio.flush()
+    #print("WTF:")
     #response = sio.readline(15).strip()
-    #print("Sent C: ", response)
+    #sio.flush()
+    #print("charge got", response)
     #ser.close()
-    #open('./data/current_data.txt', 'w').close()
     return "nothing"
 
 @app.route('/discharge_data')
 def discharge_data():
-    print("DISCHARGE DATA")
+    print("WTH:")
+    #with open("./data/configuration.txt") as f:
+    #    value_list = f.readlines()
+    #baud = int(value_list[0].rstrip())
+    #print("Discharge, baud rate:", baud)
+    #ser = serial.Serial("/dev/ttyUSB0", baud, timeout = 1)
+    #sio = io.TextIOWrapper(io.BufferedRWPair(ser, ser))
+    #sio.write(str("D"))
+    #sio.flush()
+    #response = sio.readline(15).strip()
+    #sio.flush()
+    #print("discharge got", response)
+    #ser.close()
+    return "nothing"
+
+
+
+@app.route('/poll_data')
+def poll_data():
+    print("POLL DATA")
     return "nothing"
 
 

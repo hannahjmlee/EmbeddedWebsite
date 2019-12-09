@@ -32,6 +32,14 @@
                     window.location.reload();
                     return false;
                 });
+
+                $('a#pollData').bind('click', function() {
+                    $.getJSON('/poll_data',
+                        function(data) {
+                        });
+                    window.location.reload();
+                    return false;
+                });
             });
         </script>
     </head>
@@ -59,6 +67,7 @@
         <form>
             <a href=# class="myButton" id=chargeData >Charge</a>
             <a href=# class="myButton" id=dischargeData >Discharge</a>
+            <a href=# class="myButton" id=pollData >Poll Data</a>
         </form>
         <h2>Current Data:</h2>
         <table id="currentData">

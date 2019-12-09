@@ -2,6 +2,8 @@ from flask import Flask, render_template, request
 import time
 import datetime
 import json
+import serial
+import io
 
 app = Flask(__name__)
 
@@ -262,13 +264,12 @@ def write_data():
 
 
 @app.route('/charge_data')
-def charge_data(): 
-    print("FUCKING HELL")
-    return "nothing"
-    #with open("./data/configuration.txt") as f:
-    #    value_list = f.readlines()
-    #baud = int(value_list[0].rstrip())
-    #print("BAUD RATE IS: ", baud)
+def charge_data():
+    print("CHARGE DATA")
+    with open("./data/configuration.txt") as f:
+        value_list = f.readlines()
+    baud = int(value_list[0].rstrip())
+    print("BAUD RATE IS:", baud)
     #ser = serial.Serial("/dev/ttyUSB0", baud, timeout = 1)
     #sio = io.TextIOWrapper(io.BufferedRWPair(ser, ser))
     #sio.write(str("H"))
@@ -277,4 +278,18 @@ def charge_data():
     #print("Sent C: ", response)
     #ser.close()
     #open('./data/current_data.txt', 'w').close()
+    return "nothing"
 
+@app.route('/discharge_data')
+def discharge_data():
+    print("DISCHARGE DATA")
+    return "nothing"
+
+
+@app.route('/clear_data')
+def clear_data():
+    print("FUCK")
+    open('./data/current_data.txt', 'w').close()
+    return "nothing"
+if __name__ == '__main__':
+    app.run(debug=True)

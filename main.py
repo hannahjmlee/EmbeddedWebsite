@@ -1,5 +1,4 @@
 from flask import Flask, render_template, request
-import time
 import datetime
 import json
 import serial
@@ -16,6 +15,55 @@ def isNumber(value):
         return False
     return True
 
+
+def write_data():
+    print("WRITE DATA CALLED")
+    current_file = open("./data/current_data.txt", "r")
+    log_file = open("./data/log_data.txt", "r")
+
+    current_data = current_file.readlines()
+    log_data = log_file.readlines()
+
+    lines = current_data + log_data
+    current_file.close()
+    log_file.close()
+    current_file.close()
+
+    write_file = open("./data/log_data.txt", "w")
+    write_file.writelines(lines)
+    return
+
+def read_data(sio):
+    fout = open("./data/current_data.txt", "w")
+    count = 0
+    values = []
+    print("HERE")
+    while count != 256:
+        data = sio.readline(50).strip().split(",")
+        print(len(values))
+        if(len(data) > 1):
+            st = datetime.datetime.today().strftime('%Y-%m-%d %H:%M:%S')
+#            temp = [st, ord(data[0]), ord(data[1]), ord(data[2])]
+            temp = [st, int(data[0]), int(data[1]), int(data[2])]
+            values.append(temp)
+            count = count + 1
+
+
+    print("C")
+    voltageRatio = 3.3/256
+    #TODO: update current ratio, round current as needed
+    currentRatio = .33/256
+    for i in range(255, -1, -1):
+        time = str(values[i][0]) + "\n"
+        voltage = str(round(values[i][1] * voltageRatio, 2)) + "\n"
+        charge = str(values[i][2] * currentRatio) + "\n"
+        discharge = str(values[i][3] * currentRatio) + "\n\n"
+        print(time + voltage + charge + discharge, end = "")
+        fout.write(time + voltage + charge + discharge)
+
+    fout.close()
+    write_data()
+    return
 
 @app.route('/')
 def website():
@@ -36,6 +84,28 @@ def configure():
             if(num):
                 input_baud = str(int(round(float(input_baud))))
                 value_list[0] = input_baud
+
+                with open("./data/configuration.txt") as fconfig:
+                    config = fconfig.readlines()
+                baudFile = int(config[0].rstrip())
+                #ser = serial.Serial("/dev/ttyUSB0", baud, timeout = 1)
+                ser = serial.Serial("/dev/ttyS4", baudFile, timeout = 1)
+                sio = io.TextIOWrapper(io.BufferedRWPair(ser, ser))
+                sio.write(str("C"))
+                sio.flush()
+                sio.write(str("b"))
+                sio.flush()
+                if (baud == 1200):
+                    sio.write(str("1"))
+                elif (baud == 9600):
+                    sio.write(str("2"))
+                elif (baud == 19200):
+                    sio.write(str("3"))
+                else:
+                    sio.write(str("4"))
+                sio.flush()
+                ser.close()
+
         except:
             pass
 
@@ -48,6 +118,19 @@ def configure():
             if(num):
                 input_vmin = str(float(input_vmin))
                 value_list[1] = input_vmin
+                with open("./data/configuration.txt") as fconfig:
+                    config  = fconfig.readlines()
+                baudFile = int(config[0].rstrip())
+                ser = serial.Serial("/dev/ttyS4", baudFile, timeout = 1)
+                sio = io.TextIOWrapper(io.BufferedRWPair(ser, ser))
+                sio.write(str("C"))
+                sio.flush()
+                sio.write(str("v"))
+                sio.flush()
+                vmin = str(chr(round(input_vmin * 256 / 3.3)))
+                sio.write(str(vmin))
+                sio.flush()
+                ser.close()
         except:
             pass
 
@@ -60,6 +143,20 @@ def configure():
             if(num):
                 input_vmax = str(float(input_vmax))
                 value_list[2] = input_vmax
+
+                with open("./data/configuration.txt") as fconfig:
+                    config  = fconfig.readlines()
+                baudFile = int(config[0].rstrip())
+                ser = serial.Serial("/dev/ttyS4", baudFile, timeout = 1)
+                sio = io.TextIOWrapper(io.BufferedRWPair(ser, ser))
+                sio.write(str("C"))
+                sio.flush()
+                sio.write(str("v"))
+                sio.flush()
+                vmax = str(chr(round(input_vmax * 256 / 3.3)))
+                sio.write(str(vmax))
+                sio.flush()
+                ser.close()
         except:
             pass
 
@@ -72,6 +169,22 @@ def configure():
             if(num):
                 input_chargeCurrent = str(float(input_chargeCurrent))
                 value_list[3] = input_chargeCurrent
+
+                with open("./data/configuration.txt") as fconfig:
+                    config  = fconfig.readlines()
+                baudFile = int(config[0].rstrip())
+                ser = serial.Serial("/dev/ttyS4", baudFile, timeout = 1)
+                sio = io.TextIOWrapper(io.BufferedRWPair(ser, ser))
+                sio.write(str("C"))
+                sio.flush()
+                sio.write(str("v"))
+                sio.flush()
+                #TODO: charge current ratio needs to be updated
+                currentRatio = .33/256
+                charge = str(chr(round(input_chargeCurrent * currentRatio)))
+                sio.write(str(charge))
+                sio.flush()
+                ser.close()
         except:
             pass
         try:
@@ -83,30 +196,21 @@ def configure():
                 input_dischargeCurrent = str(float(input_dischargeCurrent))
                 value_list[4] = input_dischargeCurrent
             # max discharge current
-        except:
-            pass
-
-        try:
-            input_minTemp = request.form['minTemp']
-            input_minTemp = input_minTemp.rstrip()
-            print("New Minimum Temperature: ", input_minTemp)
-            num = isNumber(input_minTemp)
-            if(num):
-                input_minTemp = str(int(round(float(input_minTemp))))
-                value_list[5] = input_minTemp
-            # min temperature
-        except:
-            pass
-
-        try:
-            input_maxTemp = request.form['maxTemp']
-            input_maxTemp = input_maxTemp.rstrip()
-            print("New Maximum Temperature: ", input_maxTemp)
-            num = isNumber(input_maxTemp)
-            if(num):
-                input_maxTemp = str(int(round(float(input_maxTemp))))
-                value_list[6] = input_maxTemp
-            # max temperature
+                with open("./data/configuration.txt") as fconfig:
+                    config  = fconfig.readlines()
+                baudFile = int(config[0].rstrip())
+                ser = serial.Serial("/dev/ttyS4", baudFile, timeout = 1)
+                sio = io.TextIOWrapper(io.BufferedRWPair(ser, ser))
+                sio.write(str("C"))
+                sio.flush()
+                sio.write(str("v"))
+                sio.flush()
+                #TODO: charge current ratio needs to be updated
+                currentRatio = .33/256
+                discharge = str(chr(round(input_dischargeCurrent * currentRatio)))
+                sio.write(str(discharge))
+                sio.flush()
+                ser.close()
         except:
             pass
 
@@ -115,15 +219,11 @@ def configure():
                 f.write(value + "\n")
 
     for i in range(len(value_list)):
-        if (i >= 1) and (i <= 4):
-            value_list[i] = float(value_list[i])
-        else:
-            value_list[i] = int(value_list[i])
+        value_list[i] = float(value_list[i])
 
     return render_template('configure.html', baud_rate = value_list[0],
             vmin = value_list[1], vmax = value_list[2], chargeI = value_list[3],
-            dischargeI = value_list[4], minTemp = value_list[5],
-            maxTemp = value_list[6], configuration_list = value_list,
+            dischargeI = value_list[4], configuration_list = value_list,
             numElements=len(value_list))
 
 @app.route('/graphs/')
@@ -136,10 +236,10 @@ def graphs():
     logged_data = []
 
     for i in range(len(lines)):
-        if (len(logged_data) == 10):
+        if (len(logged_data) == 256):
             break
         if(lines[i] == "\n"):
-            if(len(tmp) == 5):
+            if(len(tmp) == 4):
                 logged_data.append(tmp)
             tmp = []
             continue
@@ -148,18 +248,16 @@ def graphs():
     input_current_in = []
     input_current_out = []
     voltage = []
-    temp = []
 
     for row in logged_data:
-        input_current_in.insert(0, float(row[1]))
-        input_current_out.insert(0, float(row[2]))
-        voltage.insert(0, float(row[3]))
-        temp.insert(0, float(row[4]))
+        voltage.insert(0, float(row[1]))
+        input_current_in.insert(0, float(row[2]))
+        input_current_out.insert(0, float(row[3]))
 
     x_values= list(range(1, len(logged_data)+1))
     return render_template('graphs.html', inputCurrentIn=input_current_in,
             inputCurrentOut=input_current_out, batteryVoltage=voltage,
-            temperature=temp, xPoints=x_values, numElements=len(logged_data))
+            xPoints=x_values, numElements=len(logged_data))
 
 @app.route('/contact/')
 def contact():
@@ -177,7 +275,21 @@ def data():
             num = isNumber(sine_discharge)
             if(num):
                 sine_discharge = float(sine_discharge)
-            # do stuff with charge
+
+                with open("./data/configuration.txt") as fconfig:
+                    value_list = fconfig.readlines()
+                baud = int(value_list[0].rstrip())
+                #ser = serial.Serial("/dev/ttyUSB0", baud, timeout = 1)
+                print("SINE BAUD: ", baud)
+                ser = serial.Serial("/dev/ttyS4", baud, timeout = 1)
+                sio = io.TextIOWrapper(io.BufferedRWPair(ser, ser))
+                sio.write(str("S"))
+                sio.flush()
+                sio.write(str(sine_discharge) + "\r\n")
+                sio.flush()
+
+                read_data(sio)
+                ser.close()
             return redirect(url_for('data'))
         except:
             pass
@@ -189,13 +301,25 @@ def data():
             num = isNumber(prbs)
             if(num):
                 prbs = float(prbs)
+                with open("./data/configuration.txt") as fconfig:
+                    value_list = fconfig.readlines()
+                baud = int(value_list[0].rstrip())
+                #ser = serial.Serial("/dev/ttyUSB0", baud, timeout = 1)
+                ser = serial.Serial("/dev/ttyS4", baud, timeout = 1)
+                sio = io.TextIOWrapper(io.BufferedRWPair(ser, ser))
+                sio.write(str("D"))
+                sio.flush()
+                sio.write(str(prbs))
+                sio.flush()
+                read_data(sio)
+                ser.close()
             # do stuff with charge
             return redirect(url_for('data'))
         except:
             pass
     current_lines = f.readlines()
-    data = ["0000-00-00 00:00", "0.0", "0.0", "0.0", "0.0"]
-    size = 5
+    data = ["0000-00-00 00:00:00", "0.0", "0.0", "0.0", "0.0"]
+    size = 4
     i = 0
     if(len(current_lines) != 0):
         for value in current_lines:
@@ -213,10 +337,10 @@ def data():
     logged_data = []
 
     for i in range(len(lines)):
-        if (len(logged_data) == 10):
+        if (len(logged_data) == 256):
             break
         if(lines[i] == "\n"):
-            if(len(tmp) == 5):
+            if(len(tmp) == 4):
                 logged_data.append(tmp)
             tmp = []
             continue
@@ -224,78 +348,38 @@ def data():
 
     logged_size = len(logged_data)
 
-    return render_template('data.html', current_data=data, current_elements = size, logged_elements = logged_size, log_data = logged_data)
+    return render_template('data.html', current_data=data,
+            current_elements = size, logged_elements = logged_size,
+            log_data = logged_data)
 
-
-@app.route('/read_data')
-def read_data():
-    f = open("./data/input_data.txt", "r")
-    fout = open("./data/current_data.txt", "w")
-    value_list = []
-    ts = time.time()
-    st = datetime.datetime.fromtimestamp(ts).strftime('%Y-%m-%d %H:%M')
-    value_list.append(st+"\n")
-    lines = f.readlines()
-    for value in lines:
-        value_list.append(str(float(value))+"\n")
-    fout.writelines(value_list)
-    f.close()
-    fout.close()
-    return "nothing"
-
-@app.route('/write_data')
-def write_data():
-    print("SHITS")
-    current_file = open("./data/current_data.txt", "r")
-    log_file = open("./data/log_data.txt", "r")
-
-    current_data = current_file.readlines()
-    current_data.append("\n")
-    log_data = log_file.readlines()
-
-    lines = current_data + log_data
-    current_file.close()
-    log_file.close()
-    current_file.close()
-
-    write_file = open("./data/log_data.txt", "w")
-    write_file.writelines(lines)
-    return "nothing"
 
 
 @app.route('/charge_data')
 def charge_data():
-    print("WTF")
-    #with open("./data/configuration.txt") as f:
-    #    value_list = f.readlines()
-    #baud = int(value_list[0].rstrip())
-    #print("Charge, baud rate:", baud)
+    print("CHARGE")
+    with open("./data/configuration.txt") as f:
+        value_list = f.readlines()
+    baud = int(value_list[0].rstrip())
     #ser = serial.Serial("/dev/ttyUSB0", baud, timeout = 1)
-    #sio = io.TextIOWrapper(io.BufferedRWPair(ser, ser))
-    #sio.write(str("H"))
-    #sio.flush()
-    #print("WTF:")
-    #response = sio.readline(15).strip()
-    #sio.flush()
-    #print("charge got", response)
-    #ser.close()
+    ser = serial.Serial("/dev/ttyS4", baud, timeout = 1)
+    sio = io.TextIOWrapper(io.BufferedRWPair(ser, ser))
+    sio.write(str("H"))
+    sio.flush()
+    ser.close()
     return "nothing"
 
 @app.route('/discharge_data')
 def discharge_data():
-    print("WTH:")
-    #with open("./data/configuration.txt") as f:
-    #    value_list = f.readlines()
-    #baud = int(value_list[0].rstrip())
-    #print("Discharge, baud rate:", baud)
+    print("DISCHARGE")
+    with open("./data/configuration.txt") as f:
+        value_list = f.readlines()
+    baud = int(value_list[0].rstrip())
     #ser = serial.Serial("/dev/ttyUSB0", baud, timeout = 1)
-    #sio = io.TextIOWrapper(io.BufferedRWPair(ser, ser))
-    #sio.write(str("D"))
-    #sio.flush()
-    #response = sio.readline(15).strip()
-    #sio.flush()
-    #print("discharge got", response)
-    #ser.close()
+    ser = serial.Serial("/dev/ttyS4", baud, timeout = 1)
+    sio = io.TextIOWrapper(io.BufferedRWPair(ser, ser))
+    sio.write(str("D"))
+    sio.flush()
+    ser.close()
     return "nothing"
 
 
@@ -303,13 +387,64 @@ def discharge_data():
 @app.route('/poll_data')
 def poll_data():
     print("POLL DATA")
+    with open("./data/configuration.txt") as f:
+        value_list = f.readlines()
+    baud = int(value_list[0].rstrip())
+    #ser = serial.Serial("/dev/ttyUSB0", baud, timeout = 1)
+    ser = serial.Serial("/dev/ttyS4", baud, timeout = 1)
+    sio = io.TextIOWrapper(io.BufferedRWPair(ser, ser))
+    sio.write(str("P"))
+    sio.flush()
+    response = sio.readline(15).strip()
+    voltageRatio = 3.3/256
+    voltage = round(ord(response[0]) * voltageRatio, 2)
+    #TODO: update current ratio
+    currentRatio = 0.33/256
+    chargeCurrent = ord(response[1]) * currentRatio
+    dischargeCurrent = ord(response[2]) * currentRatio
+    sio.flush()
+    ser.close()
+    st = datetime.datetime.today().strftime('%Y-%m-%d %H:%M:%S')
+
+    with open("./data/current_data.txt", "w") as f:
+        f.write(st + "\n")
+        f.write(str(voltage) + "\n")
+        f.write(str(chargeCurrent) + "\n")
+        f.write(str(dischargeCurrent) + "\n")
+
+
+    return "nothing"
+
+@app.route('/load_configuration')
+def load_configuration():
+    print("LOAD CONFIGURATION")
+    with open("./data/configuration.txt") as f:
+        value_list = f.readlines()
+    baud = int(value_list[0].rstrip())
+    ser = serial.Serial("/dev/ttyS4", baud, timeout = 1)
+    sio = io.TextIOWrapper(io.BufferedRWPair(ser, ser))
+    if (baud == 1200):
+        sio.write(str("1"))
+    elif (baud == 9600):
+        sio.write(str("2"))
+    elif (baud == 19200):
+        sio.write(str("3"))
+    else:
+        sio.write(str("4"))
+    sio.flush()
+    # TODO: Update Current Charges
+    voltage = round(float(value_list[1]) * 256 / 3.3)
+    sio.write(str(chr(round(voltage))))
+    sio.flush()
+    charge = round(float(value_list[2]))
+    sio.write(str(chr(round(charge))))
+    sio.flush()
+    discharge = round(float(value_list[3]))
+    sio.write(str(chr(round(discharge))))
+    sio.flush()
+
     return "nothing"
 
 
-@app.route('/clear_data')
-def clear_data():
-    print("FUCK")
-    open('./data/current_data.txt', 'w').close()
-    return "nothing"
 if __name__ == '__main__':
     app.run(debug=True)

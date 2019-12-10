@@ -1,4 +1,5 @@
-to run:
-export FLASK_APP=[filename]
-    exmaple: export FLASK_APP=main
-flask run
+# Embedded System
+Hannah Lee and Aleksei LaRue
+## To run:
+`export FLASK_APP=main`
+`flask run`

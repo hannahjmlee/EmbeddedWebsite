@@ -5,7 +5,6 @@
         var inputCurrentIn = {{inputCurrentIn}};
         var inputCurrentOut = {{inputCurrentOut}};
         var batteryVoltage = {{batteryVoltage}};
-        var temperature = {{temperature}};
         var xPoints = {{xPoints}};
         var numElements = {{numElements}};
         </script>
@@ -15,7 +14,7 @@
     <body>
         {% extends "layout.html" %}
         {% block content %}
-        <h1>Graphs of the 10 Most Recent Measurements</h1>
+        <h1>Graphs of the 256 Most Recent Measurements</h1>
         <div id="currentChartContainer" style="height: 360px; width: 75%;"></div><br>
         <script>makeCurrentChart("currentChartContainer",
             "Charge and Discharge Current Readings", {{inputCurrentIn}},
@@ -25,9 +24,6 @@
         <script>makeChart("voltageChartContainer", "Voltage Readings", "Voltage (V)",
             {{batteryVoltage}}, {{xPoints}}, {{numElements}}); </script>
 
-        <div id="tempChartContainer" style="height: 360px; width: 75%;"></div><br>
-        <script>makeChart("tempChartContainer", "Temperature Readings", "Temperature (F)",
-            {{temperature}}, {{xPoints}},{{numElements}}); </script>
         {% endblock %}
     </body>
 </html>

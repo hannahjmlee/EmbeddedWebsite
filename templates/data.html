@@ -13,20 +13,37 @@
                     $.getJSON('/charge_data',
                         function(data) {
                         });
-                    window.location.reload();
-                    return false;
-                });
-
-                $('input#readData').bind('click', function() {
-                    $.getJSON('/read_data',
+                    $.getJSON('/poll_data',
                         function(data) {
                         });
                     window.location.reload();
                     return false;
                 });
 
+                //$('input#sineData').bind('click', function() {
+                //    $.getJSON('/sine_data',
+                //        function(data) {
+                //        });
+                //    window.location.reload();
+                //    return false;
+                //});
+
+                //$('input#prbsData').bind('click', function() {
+                //    $.getJSON('/prbs_data',
+                //        function(data) {
+                //        });
+                //    //$.getJSON('/read_data',
+                //    //    function(data) {
+                //    //    });
+                //    window.location.reload();
+                //    return false;
+                //});
+
                 $('a#dischargeData').bind('click', function() {
                     $.getJSON('/discharge_data',
+                        function(data) {
+                        });
+                    $.getJSON('/poll_data',
                         function(data) {
                         });
                     window.location.reload();
@@ -51,11 +68,11 @@
         <br>
         <form method="POST">
             <input name="sine_discharge">
-            <input type="submit" id=readData value="Sine Discharge">
+            <input type="submit" id=sineData value="Sine Discharge">
         </form> <br>
         <form method="POST">
             <input name="PRBS_discharge">
-            <input type="submit" id=readData value="PRBS Discharge">
+            <input type="submit" id=prbsData value="PRBS Discharge">
         </form> <br>
         <form>
             <a href=# class="myButton" id=chargeData >Charge</a>
@@ -66,10 +83,9 @@
         <table id="currentData">
             <tr>
                 <th>Time Stamp</th>
-                <th>Charge Current(A)</th>
-                <th>Discharge Current(A)</th>
                 <th>Battery Voltage (V)</th>
-                <th>Temperature (F)</th>
+                <th>Charge Current (A)</th>
+                <th>Discharge Current (A)</th>
             </tr>
             <tr>
                 {% for column in range(current_elements) %}
@@ -82,10 +98,9 @@
         <table id="loggedData">
             <tr>
                 <th>Time Stamp</th>
-                <th>Charge Current(A)</th>
-                <th>Discharge Current</th>
                 <th>Battery Voltage (V)</th>
-                <th>Temperature (F)</th>
+                <th>Charge Current (A)</th>
+                <th>Discharge Current (A)</th>
             </tr>
             {% for row in range(logged_elements) %}
             <tr>

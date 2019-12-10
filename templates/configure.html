@@ -1,25 +1,24 @@
 <!DOCTYPE html>
 <html lang=''>
     <head>
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
         <script type=text/javascript>
             var baud_rate = {{baud_rate}};
             var vmax = {{vmax}};
             var vmin = {{vmin}};
             var chargeI = {{chargeI}};
             var dischargeI = {{dischargeI}};
-            var minTemp = {{minTemp}};
-            var maxTemp = {{maxTemp}};
             var configuration_list = {{configuration_list|tojson|safe}};
             var numElements = {{numElements}};
-        $(function() {
-            $('a#loadCurrent').bind('click', function() {
-                $.getJSON('/load_configuration',
-                    function(data) {
-                    });
-                window.location.reload();
-                return false;
+            $(function() {
+                $('a#loadCurrent').bind('click', function() {
+                    $.getJSON('/load_configuration',
+                        function(data) {
+                        });
+                    window.location.reload();
+                    return false;
+                });
             });
-        }
         </script>
     </head>
     <body>
@@ -35,8 +34,6 @@
                     <th>Max Voltage (V)</th>
                     <th>Charge Current (A)</th>
                     <th>Discharge Current (A)</th>
-                    <th>Min Temperature (F)</th>
-                    <th>Max Temperature (F)</th>
                 </tr>
                 <tr>
                     {% for column in range(numElements) %}
@@ -47,7 +44,7 @@
             <br><br>
             <form>
                 <a href=# class="myButton" id=loadCurrent> Load Current Configuration</a>
-            </form> 
+            </form>
             <h3> Update Baud Rate: </h3>
             <p> Choose from 1200, 9600, 19200, 115200 bps </p>
             <form method="POST">
@@ -71,15 +68,6 @@
             <form method="POST">
                 <input name="dischargeI">
                 <input type="submit" value="Update Discharge Current (A)">
-            </form>
-            <h3> Update Min/Max Temperature: </h3>
-            <form method="POST">
-                <input name="minTemp">
-                <input type="submit" value="Update Min Temperature (F)">
-            </form> <br>
-            <form method="POST">
-                <input name="maxTemp">
-                <input type="submit" value="Update Max Temperature (F)">
             </form>
         </div>
         {% endblock %}
